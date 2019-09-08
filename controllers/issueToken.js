@@ -20,9 +20,14 @@ async function issueToken(request, response) {
     }
 
     delete userData['password'];
-    userData.issuedTimeStamp = Date.now();
 
-    const token = jwt.sign(userData, process.env.JWT_KEY);
+    const issuedTimeStamp = Date.now();
+    userData.issuedTimeStamp = issuedTimeStamp;
+
+    const token = jwt.sign({
+      data: userData, 
+      exp: Math.floor(issuedTimeStamp / 1000) + (7 * 24 * 60 * 60),
+    }, process.env.JWT_KEY);
     response.send({token});  
   } catch (error) {
     next(error);
